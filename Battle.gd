@@ -7,6 +7,7 @@ var engagement_width # how many soldiers can join an action
 
 var selected_skill # temp container for selected skill
 var available_targets = [] #temp container for potential skill targets
+var chozen_actions # dictionary in the format of {commander : [skill, target]}
 
 func _ready():
 	randomize()
@@ -16,6 +17,7 @@ func _ready():
 	enemy_army = battle.enemy_army
 	column_width = battle.column_width
 	engagement_width = battle.engagement_width
+	reset_action()
 	# $SceneBox.set_process_unhandled_input(false)
 	draw_cards()
 	display()
@@ -41,6 +43,12 @@ func display():
 		column_display.connect("column_selected", self, "_on_column_selected")
 		get_node("SceneBox/BattleField/EnemyBackground/Enemy").add_child(column_display)
 
+func reset_action():
+	chozen_actions = {}
+	var player_available_column_count = column_width if player_army.columns.size() > column_width else player_army.columns.size()
+	for column_index in player_available_column_count:
+		chozen_actions[player_army.columns[column_index].commander] = null	
+
 func draw_cards():
 	for column in player_army.columns:
 		column.commander.drawed_cards = []
@@ -49,8 +57,7 @@ func draw_cards():
 			column.commander.drawed_cards.append(column.commander.skill_cards[card_index])
 			
 func display_drawed_cards(commander):
-	for existing_cards in get_node("SceneBox/CardBoxBackground/CardBox").get_children():
-		existing_cards.queue_free()
+	clear_card_box()
 	
 	for card in commander.drawed_cards:
 		var card_display = preload("res://CardDisplay.tscn").instance()
@@ -59,10 +66,14 @@ func display_drawed_cards(commander):
 		var center_container = CenterContainer.new()
 		center_container.add_child(card_display)
 		get_node("SceneBox/CardBoxBackground/CardBox").add_child(center_container)
-	
+
+func clear_card_box():
+	for existing_cards in get_node("SceneBox/CardBoxBackground/CardBox").get_children():
+		existing_cards.queue_free()
+
 func _on_card_pressed(card):
 	if ! card.is_enemy():
-		if card is preload("res://Commander.gd"):
+		if card is preload("res://Commander.gd") and chozen_actions[card] == null:
 			display_drawed_cards(card)
 		if card is preload("res://skill/Skill.gd"):
 			selected_skill = card
@@ -70,11 +81,29 @@ func _on_card_pressed(card):
 
 func _on_column_selected(column):
 	if selected_skill != null and available_targets.find(column) != -1:
-		selected_skill._use(column, self)
+		#selected_skill._use(column, self)
+		chozen_actions[selected_skill.commander] = [selected_skill, column]
+		unhightlight_potential_targets()
+		clear_card_box()
+		check_transit_to_resolve_scene()
+		mark_column_as_action_chozen(selected_skill.commander.column.column_display)
+
+func check_transit_to_resolve_scene():
+	for action in chozen_actions.values():
+		if action == null:
+			return null
+	get_tree().change_scene("res://BattleResolveScene.tscn")
+		
+
+func mark_column_as_action_chozen(column_display):
+	column_display.get_node("ColorRect").color = Color(0, 0, 0)
+	column_display.get_node("ColorRect").visible = true
 
 func _gui_input(event):
 	if event.is_pressed():
+		clear_selected_skill()
 		unhightlight_potential_targets()
+		clear_card_box()
 
 func highlight_available_targets(skill):
 	if skill.target_type == skill.SELF:
@@ -86,7 +115,9 @@ func highlight_available_targets(skill):
 			column.emit_signal("selected_as_potential_target")
 
 func unhightlight_potential_targets():
-	selected_skill = null
 	for old_target in available_targets:
 		old_target.emit_signal("deselected_as_potential_target")
 		available_targets = []
+
+func clear_selected_skill():
+	selected_skill = null
