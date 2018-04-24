@@ -16,7 +16,7 @@ blend_mode = 0
 light_mode = 0
 _sections_unfolded = [ "Resource" ]
 
-[node name="Battle" type="MarginContainer" index="0"]
+[node name="Battle" type="MarginContainer"]
 
 material = SubResource( 1 )
 anchor_left = 0.0

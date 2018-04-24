@@ -10,6 +10,7 @@ func initialize():
 		player_commander.selected_troop = player_commander.reserve_troops[0]
 		player_commander.command += x
 		player_commander.column = player_column
+		player_column.position = player_column.POSITION["CENTER"]
 		player_army.columns.append(player_column)
 		for y in range(0, 10):
 			var skill = preload("res://skill/Attack.gd").new()
@@ -28,6 +29,7 @@ func initialize():
 	enemy_commander.selected_troop = enemy_commander.reserve_troops[0]
 	enemy_commander.column = enemy_column
 	enemy_army.columns.append(enemy_column)
+	enemy_column.position = enemy_column.POSITION["CENTER"]
 	
 	column_width = 3
 	engagement_width = 200
