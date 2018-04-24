@@ -92,7 +92,11 @@ func check_transit_to_resolve_scene():
 	for action in chozen_actions.values():
 		if action == null:
 			return null
-	get_tree().change_scene("res://BattleResolveScene.tscn")
+	var resolve_scene = preload("res://BattleResolveScene.tscn").instance()
+	resolve_scene.battle = self
+	# get_tree().change_scene_to(resolve_scene)
+	$SceneBox.visible = false
+	add_child(resolve_scene)
 		
 
 func mark_column_as_action_chozen(column_display):

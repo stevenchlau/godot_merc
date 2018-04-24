@@ -2,7 +2,7 @@
 
 [ext_resource path="res://ColumnDisplay.gd" type="Script" id=1]
 
-[node name="Column" type="MarginContainer" index="0"]
+[node name="Column" type="MarginContainer"]
 
 anchor_left = 0.5
 anchor_top = 0.0

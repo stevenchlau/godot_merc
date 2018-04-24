@@ -20,4 +20,3 @@ func _use(target, battle):
 
 
 
-

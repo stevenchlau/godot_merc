@@ -18,3 +18,5 @@ func _use(target_column, battle):
 				damage += 1
 	attacked_troop.number -= damage
 	attacked_troop.emit_signal("damaged", damage)
+	return commander.card_name + " attacked " + target_column.commander.card_name + " for " + str(damage) + " damage"
+	 
