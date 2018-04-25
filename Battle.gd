@@ -2,6 +2,7 @@ extends MarginContainer
 
 var player_army
 var enemy_army
+var all_columns = []
 var column_width # how many columns
 var engagement_width # how many soldiers can join an action
 
@@ -17,6 +18,10 @@ func _ready():
 	enemy_army = battle.enemy_army
 	column_width = battle.column_width
 	engagement_width = battle.engagement_width
+	for column in player_army.columns:
+		all_columns.append(column)
+	for column in enemy_army.columns:
+		all_columns.append(column)
 	
 	# $SceneBox.set_process_unhandled_input(false)
 	draw_cards()
@@ -26,6 +31,10 @@ func _ready():
 func new_turn():
 	reset_action()
 	draw_cards()
+	for column in all_columns:
+		for a_status in column.status:
+			if a_status.has_countdown:
+				a_status.countdown()
 	
 func display():
 	var player_available_column_count = column_width if player_army.columns.size() > column_width else player_army.columns.size()

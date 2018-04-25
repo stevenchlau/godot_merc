@@ -29,6 +29,7 @@ func display_card(card):
 		cards_container.alignment = cards_container.ALIGN_BEGIN
 	
 func _on_column_selected_as_potential_target():
+	$ColorRect.color = Color(1, 1, 1)
 	get_node("ColorRect").visible = true
 
 func _on_column_deselected_as_potential_target():

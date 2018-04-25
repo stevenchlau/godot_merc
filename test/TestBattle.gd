@@ -12,13 +12,16 @@ func initialize():
 		player_commander.column = player_column
 		player_column.position = player_column.POSITION["CENTER"]
 		player_army.columns.append(player_column)
-		for y in range(0, 10):
+		for y in range(0, 2):
 			var skill = preload("res://skill/Attack.gd").new()
 			skill.commander = player_commander
 			player_commander.skill_cards.append(skill)
 		var heal = preload("res://skill/Heal.gd").new()
 		heal.commander = player_commander
 		player_commander.skill_cards.append(heal)
+		var scout = preload("res://skill/Scout.gd").new()
+		scout.commander = player_commander
+		player_commander.skill_cards.append(scout)
 	
 	
 	enemy_army = preload("res://Army.gd").new()
