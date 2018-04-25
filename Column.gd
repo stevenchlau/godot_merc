@@ -6,6 +6,7 @@ var commander
 var deployed_troops = []
 var column_display
 var position #rearguard, center etc
+var routed = false
 
 signal selected_as_potential_target
 signal deselected_as_potential_target

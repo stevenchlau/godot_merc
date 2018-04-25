@@ -17,10 +17,15 @@ func _ready():
 	enemy_army = battle.enemy_army
 	column_width = battle.column_width
 	engagement_width = battle.engagement_width
-	reset_action()
+	
 	# $SceneBox.set_process_unhandled_input(false)
 	draw_cards()
 	display()
+	reset_action()
+	
+func new_turn():
+	reset_action()
+	draw_cards()
 	
 func display():
 	var player_available_column_count = column_width if player_army.columns.size() > column_width else player_army.columns.size()
@@ -47,7 +52,8 @@ func reset_action():
 	chozen_actions = {}
 	var player_available_column_count = column_width if player_army.columns.size() > column_width else player_army.columns.size()
 	for column_index in player_available_column_count:
-		chozen_actions[player_army.columns[column_index].commander] = null	
+		chozen_actions[player_army.columns[column_index].commander] = null
+		player_army.columns[column_index].column_display.get_node("ColorRect").visible = false	
 
 func draw_cards():
 	for column in player_army.columns:
@@ -114,14 +120,22 @@ func highlight_available_targets(skill):
 		available_targets.append(skill.commander.column)
 		skill.commander.column.emit_signal("selected_as_potential_target")
 	elif skill.target_type == skill.ENEMY:
+		var target_column_types = skill.target_column_types
 		for column in enemy_army.columns:
-			available_targets.append(column)
-			column.emit_signal("selected_as_potential_target")
+			if target_column_types.has(column.position) and ! column.routed:
+				available_targets.append(column)
+				column.emit_signal("selected_as_potential_target")
+		if available_targets.size() == 0:
+			target_column_types = [skill.commander.column.POSITION.CENTER]
+			for column in enemy_army.columns:
+				if target_column_types.has(column.position) and ! column.routed:
+					available_targets.append(column)
+					column.emit_signal("selected_as_potential_target")
 
 func unhightlight_potential_targets():
 	for old_target in available_targets:
 		old_target.emit_signal("deselected_as_potential_target")
-		available_targets = []
+	available_targets = []
 
 func clear_selected_skill():
 	selected_skill = null

@@ -19,4 +19,5 @@ func _ready():
 func _on_timer_timeout():
 	self.queue_free()
 	battle.get_node("SceneBox").visible = true
+	battle.new_turn()
 

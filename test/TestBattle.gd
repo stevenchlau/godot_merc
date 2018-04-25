@@ -22,14 +22,18 @@ func initialize():
 	
 	
 	enemy_army = preload("res://Army.gd").new()
-	var enemy_commander = preload("res://Commander.gd").new("Roman", 1, 1, 1, [])
-	enemy_commander.enemy = true
-	var enemy_column = preload("res://Column.gd").new(enemy_commander)
-	enemy_commander.reserve_troops.append(createTroop(enemy_commander))
-	enemy_commander.selected_troop = enemy_commander.reserve_troops[0]
-	enemy_commander.column = enemy_column
-	enemy_army.columns.append(enemy_column)
-	enemy_column.position = enemy_column.POSITION["CENTER"]
+	for x in range(0, 3):
+		var enemy_commander = preload("res://Commander.gd").new("Roman" + str(x), 1, 1, 1, [])
+		enemy_commander.enemy = true
+		var enemy_column = preload("res://Column.gd").new(enemy_commander)
+		enemy_commander.reserve_troops.append(createTroop(enemy_commander))
+		enemy_commander.selected_troop = enemy_commander.reserve_troops[0]
+		enemy_commander.column = enemy_column
+		enemy_army.columns.append(enemy_column)
+		enemy_column.position = enemy_column.POSITION["CENTER"]
+		if x == 2:
+			enemy_column.position = enemy_column.POSITION.VANGUARD
+			enemy_commander.selected_troop.number = 50
 	
 	column_width = 3
 	engagement_width = 200
