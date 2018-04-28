@@ -11,6 +11,13 @@ func _ready():
 			var label = Label.new()		
 			label.text = skill_use_summary
 			get_node("VBoxContainer/MessageContainer").add_child(label)
+	var AI_orders = battle.enemy_army.AI.think().values()
+	for order in AI_orders:
+		var skill_use_summary = order.resolve() # action_array[0]._use(action_array[1], battle)
+		if skill_use_summary != null:
+			var label = Label.new()		
+			label.text = skill_use_summary
+			get_node("VBoxContainer/MessageContainer").add_child(label)	
 	timer.wait_time = 3
 	timer.one_shot = true
 	add_child(timer)

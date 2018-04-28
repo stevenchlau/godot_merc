@@ -46,6 +46,9 @@ func initialize():
 		if x == 2:
 			enemy_column.position = enemy_column.POSITION.VANGUARD
 			enemy_commander.selected_troop.number = 50
+	var AI = create_AI()
+	enemy_army.AI = AI
+	AI.army = enemy_army
 	
 	column_width = 3
 	engagement_width = 200
@@ -58,7 +61,11 @@ func createTroop(commander):
 	troop.number = 500 + randi() % 100
 	return troop
 	
-	
+func create_AI():
+	var AI_trait = preload("res://battle/AITrait.gd").new()
+	AI_trait.target_mode = AI_trait.TARGET_MODE.STRONGEST
+	var AI = preload("res://battle/AI.gd").new(AI_trait)
+	return AI
 
 #func _process(delta):
 #	# Called every frame. Delta is time since last frame.

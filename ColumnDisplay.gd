@@ -12,6 +12,7 @@ func _ready():
 	column.connect("selected_as_potential_target", self, "_on_column_selected_as_potential_target")
 	column.connect("deselected_as_potential_target", self, "_on_column_deselected_as_potential_target")
 	column.connect("receive_status", self, "_on_column_receive_status")
+	column.connect("status_expire", self, "_on_column_status_expire")
 	
 func display_card(card):
 	var card_display = preload("../CardDisplay.tscn").instance()
@@ -32,6 +33,9 @@ func _gui_input(event):
 		emit_signal("column_selected", column)
 	
 func _on_column_receive_status():
+	display_status()
+	
+func _on_column_status_expire():
 	display_status()	
 		
 func display_status():

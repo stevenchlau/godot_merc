@@ -11,9 +11,9 @@ signal expire
 func countdown():
 	countdown -= 1
 	if countdown == 0:
-		emit_signal("expire")
 		used_on.status.erase(self)
-		used_on.display_status()
+		emit_signal("expire")
+		
 
 func _react(order):
 	return ""	 
