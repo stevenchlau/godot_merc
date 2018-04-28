@@ -4,7 +4,7 @@ var heal_amount
 
 func _init():
 	card_name = "heal"
-	target_type = SELF
+	target_type = TARGET_TYPE.SELF
 	heal_amount = 100
 	
 

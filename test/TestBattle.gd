@@ -12,6 +12,7 @@ func initialize():
 		player_commander.column = player_column
 		player_column.position = player_column.POSITION["CENTER"]
 		player_army.columns.append(player_column)
+		player_column.army = player_army
 		for y in range(0, 2):
 			var skill = preload("res://skill/Attack.gd").new()
 			skill.commander = player_commander
@@ -22,6 +23,9 @@ func initialize():
 		var scout = preload("res://skill/Scout.gd").new()
 		scout.commander = player_commander
 		player_commander.skill_cards.append(scout)
+		var guard = preload("res://skill/Guard.gd").new()
+		guard.commander = player_commander
+		player_commander.skill_cards.append(guard)		
 	
 	
 	enemy_army = preload("res://Army.gd").new()
@@ -33,13 +37,20 @@ func initialize():
 		enemy_commander.selected_troop = enemy_commander.reserve_troops[0]
 		enemy_commander.column = enemy_column
 		enemy_army.columns.append(enemy_column)
+		enemy_column.army = enemy_army
 		enemy_column.position = enemy_column.POSITION["CENTER"]
+		for y in range(0, 2):
+			var skill = preload("res://skill/Attack.gd").new()
+			skill.commander = enemy_commander
+			enemy_commander.skill_cards.append(skill)		
 		if x == 2:
 			enemy_column.position = enemy_column.POSITION.VANGUARD
 			enemy_commander.selected_troop.number = 50
 	
 	column_width = 3
 	engagement_width = 200
+	player_army.opponent = enemy_army
+	enemy_army.opponent = player_army
 
 func createTroop(commander):
 	var troop_type = preload("../TroopType.gd").createTroopType("light infantry")

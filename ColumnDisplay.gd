@@ -2,20 +2,16 @@ extends MarginContainer
 
 var column
 var battle
-var display_card_from_bottom
 
 signal column_selected
 
-
-func get_frontline():
-	return column.deployed_troops.front()
-	
 func _ready():
 	display_card(column.commander)	
 	display_card(column.commander.selected_troop)
 	get_node("VBoxContainer/PositionLabel").text = column.position
 	column.connect("selected_as_potential_target", self, "_on_column_selected_as_potential_target")
 	column.connect("deselected_as_potential_target", self, "_on_column_deselected_as_potential_target")
+	column.connect("receive_status", self, "_on_column_receive_status")
 	
 func display_card(card):
 	var card_display = preload("../CardDisplay.tscn").instance()
@@ -23,10 +19,6 @@ func display_card(card):
 	var cards_container = get_node("VBoxContainer/CardsContainer")	
 	card_display.battle = battle	
 	cards_container.add_child(card_display)
-	if display_card_from_bottom:
-		cards_container.alignment = cards_container.ALIGN_END
-	else:
-		cards_container.alignment = cards_container.ALIGN_BEGIN
 	
 func _on_column_selected_as_potential_target():
 	$ColorRect.color = Color(1, 1, 1)
@@ -38,3 +30,12 @@ func _on_column_deselected_as_potential_target():
 func _gui_input(event):
 	if event.is_pressed():
 		emit_signal("column_selected", column)
+	
+func _on_column_receive_status():
+	display_status()	
+		
+func display_status():
+	var label = get_node("VBoxContainer/StatusLabel")
+	label.text = ""
+	for a_status in column.status:
+		label.text += a_status.status_name + " "

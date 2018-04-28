@@ -4,7 +4,8 @@ var attack_bonus = 0
 	
 func _init():
 	card_name = "attack"
-	target_type = TargetType.ENEMY
+	types.append(TYPE.ATTACK)
+	target_type = TARGET_TYPE.ENEMY
 	target_column_types.append(preload("res://Column.gd").POSITION.VANGUARD)
 	
 func _use(target_column, battle):

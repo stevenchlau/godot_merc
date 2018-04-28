@@ -2,28 +2,33 @@ extends MarginContainer
 
 var player_army
 var enemy_army
-var all_columns = []
+var all_columns = [] # a convenience variable for looping through all the columns
 var column_width # how many columns
 var engagement_width # how many soldiers can join an action
 
 var selected_skill # temp container for selected skill
 var available_targets = [] #temp container for potential skill targets
-var chozen_actions # dictionary in the format of {commander : [skill, target]}
+var chozen_actions # dictionary in the format of {commander : order}
 
 func _ready():
 	randomize()
+	# test codes
 	var battle = load("res://test/TestBattle.gd").new()
 	battle.initialize()
-	player_army = battle.player_army	
-	enemy_army = battle.enemy_army
+	player_army = battle.player_army
+	player_army.battle = self	
+	enemy_army = battle.enemy_army	
+	enemy_army.battle = self
+	player_army.opponent = enemy_army
+	enemy_army.opponent = player_army
 	column_width = battle.column_width
 	engagement_width = battle.engagement_width
+	# end of test codes
 	for column in player_army.columns:
 		all_columns.append(column)
 	for column in enemy_army.columns:
 		all_columns.append(column)
 	
-	# $SceneBox.set_process_unhandled_input(false)
 	draw_cards()
 	display()
 	reset_action()
@@ -35,7 +40,14 @@ func new_turn():
 		for a_status in column.status:
 			if a_status.has_countdown:
 				a_status.countdown()
-	
+
+func draw_cards():
+	for column in all_columns:
+		column.commander.drawed_cards = []
+		for card_count in range(0, column.commander.command):
+			var card_index = randi() % column.commander.skill_cards.size()
+			column.commander.drawed_cards.append(column.commander.skill_cards[card_index])
+
 func display():
 	var player_available_column_count = column_width if player_army.columns.size() > column_width else player_army.columns.size()
 	for x in range(0, player_available_column_count):
@@ -43,7 +55,6 @@ func display():
 		column_display.column = player_army.columns[x]
 		player_army.columns[x].column_display = column_display
 		column_display.battle = self
-		column_display.display_card_from_bottom = true
 		column_display.connect("column_selected", self, "_on_column_selected")
 		get_node("SceneBox/BattleField/PlayerBackground/Player").add_child(column_display)
 
@@ -53,7 +64,6 @@ func display():
 		column_display.column = enemy_army.columns[x]
 		enemy_army.columns[x].column_display = column_display
 		column_display.battle = self
-		column_display.display_card_from_bottom = false
 		column_display.connect("column_selected", self, "_on_column_selected")
 		get_node("SceneBox/BattleField/EnemyBackground/Enemy").add_child(column_display)
 
@@ -62,18 +72,10 @@ func reset_action():
 	var player_available_column_count = column_width if player_army.columns.size() > column_width else player_army.columns.size()
 	for column_index in player_available_column_count:
 		chozen_actions[player_army.columns[column_index].commander] = null
-		player_army.columns[column_index].column_display.get_node("ColorRect").visible = false	
-
-func draw_cards():
-	for column in player_army.columns:
-		column.commander.drawed_cards = []
-		for card_count in range(0, column.commander.command):
-			var card_index = randi() % column.commander.skill_cards.size()
-			column.commander.drawed_cards.append(column.commander.skill_cards[card_index])
+		player_army.columns[column_index].column_display.get_node("VBoxContainer/PositionLabel/ActionSelectedIndicator").visible = false	
 			
 func display_drawed_cards(commander):
-	clear_card_box()
-	
+	clear_card_box()	
 	for card in commander.drawed_cards:
 		var card_display = preload("res://CardDisplay.tscn").instance()
 		card_display.card = card
@@ -96,27 +98,24 @@ func _on_card_pressed(card):
 
 func _on_column_selected(column):
 	if selected_skill != null and available_targets.find(column) != -1:
-		#selected_skill._use(column, self)
-		chozen_actions[selected_skill.commander] = [selected_skill, column]
+		chozen_actions[selected_skill.commander] = preload("res://skill/Order.gd").new(selected_skill, column, self) # [selected_skill, column]
 		unhightlight_potential_targets()
 		clear_card_box()
 		check_transit_to_resolve_scene()
 		mark_column_as_action_chozen(selected_skill.commander.column.column_display)
 
 func check_transit_to_resolve_scene():
-	for action in chozen_actions.values():
-		if action == null:
+	for order in chozen_actions.values():
+		if order == null:
 			return null
 	var resolve_scene = preload("res://BattleResolveScene.tscn").instance()
 	resolve_scene.battle = self
-	# get_tree().change_scene_to(resolve_scene)
 	$SceneBox.visible = false
 	add_child(resolve_scene)
-		
 
 func mark_column_as_action_chozen(column_display):
-	column_display.get_node("ColorRect").color = Color(0, 0, 0)
-	column_display.get_node("ColorRect").visible = true
+	#column_display.get_node("ColorRect").color = Color(0, 0, 0)
+	column_display.get_node("VBoxContainer/PositionLabel/ActionSelectedIndicator").visible = true
 
 func _gui_input(event):
 	if event.is_pressed():
@@ -125,21 +124,9 @@ func _gui_input(event):
 		clear_card_box()
 
 func highlight_available_targets(skill):
-	if skill.target_type == skill.SELF:
-		available_targets.append(skill.commander.column)
-		skill.commander.column.emit_signal("selected_as_potential_target")
-	elif skill.target_type == skill.ENEMY:
-		var target_column_types = skill.target_column_types
-		for column in enemy_army.columns:
-			if target_column_types.has(column.position) and ! column.routed:
-				available_targets.append(column)
-				column.emit_signal("selected_as_potential_target")
-		if available_targets.size() == 0:
-			target_column_types = [skill.commander.column.POSITION.CENTER]
-			for column in enemy_army.columns:
-				if target_column_types.has(column.position) and ! column.routed:
-					available_targets.append(column)
-					column.emit_signal("selected_as_potential_target")
+	available_targets = skill.find_available_targets()
+	for column in available_targets:
+		column.emit_signal("selected_as_potential_target")
 
 func unhightlight_potential_targets():
 	for old_target in available_targets:
