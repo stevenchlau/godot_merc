@@ -1,7 +1,5 @@
 extends GDScript
 
-const POSITION = {CENTER = "center", VANGUARD = "vanguard", REARGUARD = "rearguard", SKIRMISH = "skirmish", FLANK = "flank"}
-
 var army
 var commander
 var position #rearguard, center etc

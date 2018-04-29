@@ -8,7 +8,7 @@ signal column_selected
 func _ready():
 	display_card(column.commander)	
 	display_card(column.commander.selected_troop)
-	get_node("VBoxContainer/PositionLabel").text = column.position
+	get_node("VBoxContainer/PositionLabel").text = column.position.position_name
 	column.connect("selected_as_potential_target", self, "_on_column_selected_as_potential_target")
 	column.connect("deselected_as_potential_target", self, "_on_column_deselected_as_potential_target")
 	column.connect("receive_status", self, "_on_column_receive_status")

@@ -3,7 +3,7 @@ extends "res://skill/Skill.gd"
 func _init():
 	card_name = "scout"
 	target_type = TARGET_TYPE.ENEMY
-	var position = preload("res://Column.gd").POSITION
+	var position = preload("res://battle/Position.gd").POSITION_NAME
 	target_column_types = [position.VANGUARD, position.CENTER, position.FLANK, position.SKIRMISH, position.REARGUARD]
 	
 

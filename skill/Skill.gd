@@ -27,11 +27,11 @@ func find_available_targets():
 			available_targets.append(column)
 	elif target_type == TARGET_TYPE.ENEMY:
 		for column in commander.column.army.opponent.columns:
-			if target_column_types.has(column.position) and ! column.routed:
+			if target_column_types.has(column.position.position_name) and ! column.routed:
 				available_targets.append(column)
 		if available_targets.size() == 0:
 			for column in commander.column.army.opponent.columns:
-				if column.position == column.POSITION.CENTER and ! column.routed:
+				if column.position.position_name == preload("res://battle/Position.gd").POSITION_NAME.CENTER and ! column.routed:
 					available_targets.append(column)
 	return available_targets
 

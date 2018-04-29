@@ -10,7 +10,7 @@ func initialize():
 		player_commander.selected_troop = player_commander.reserve_troops[0]
 		player_commander.command += x
 		player_commander.column = player_column
-		player_column.position = player_column.POSITION["CENTER"]
+		player_column.position = preload("res://battle/Center.gd").new()
 		player_army.columns.append(player_column)
 		player_column.army = player_army
 		for y in range(0, 2):
@@ -38,13 +38,13 @@ func initialize():
 		enemy_commander.column = enemy_column
 		enemy_army.columns.append(enemy_column)
 		enemy_column.army = enemy_army
-		enemy_column.position = enemy_column.POSITION["CENTER"]
+		enemy_column.position = preload("res://battle/Center.gd").new()
 		for y in range(0, 2):
 			var skill = preload("res://skill/Attack.gd").new()
 			skill.commander = enemy_commander
 			enemy_commander.skill_cards.append(skill)		
 		if x == 2:
-			enemy_column.position = enemy_column.POSITION.VANGUARD
+			enemy_column.position = preload("res://battle/Vanguard.gd").new()
 			enemy_commander.selected_troop.number = 50
 	var AI = create_AI()
 	enemy_army.AI = AI

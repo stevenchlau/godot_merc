@@ -6,7 +6,7 @@ func _init():
 	card_name = "attack"
 	types.append(TYPE.ATTACK)
 	target_type = TARGET_TYPE.ENEMY
-	target_column_types.append(preload("res://Column.gd").POSITION.VANGUARD)
+	target_column_types.append(preload("res://battle/Position.gd").POSITION_NAME.VANGUARD)
 	
 func _use(target_column, battle):
 	var total_attack = commander.selected_troop.troop_type.attack + commander.attack + attack_bonus
