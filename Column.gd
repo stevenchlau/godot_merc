@@ -26,7 +26,8 @@ func receive_status(a_status):
 func _on_status_expire():
 	emit_signal("status_expire")
 
-		
+func on_routed():
+	position.apply_on_rout_penalty(army)
 
 
 

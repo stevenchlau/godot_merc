@@ -28,10 +28,14 @@ func _ready():
 		all_columns.append(column)
 	for column in enemy_army.columns:
 		all_columns.append(column)
-	
+	player_army.morale = 100
+	player_army.organization = 100
+	enemy_army.morale = 100
+	enemy_army.organization = 100	
 	draw_cards()
 	display()
 	reset_action()
+	display_army_info()
 	
 func new_turn():
 	reset_action()
@@ -40,6 +44,8 @@ func new_turn():
 		for a_status in column.status:
 			if a_status.has_countdown:
 				a_status.countdown()
+	apply_position_turn_start_recovery()
+	display_army_info()
 
 func draw_cards():
 	for column in all_columns:
@@ -48,6 +54,11 @@ func draw_cards():
 			var card_index = randi() % column.commander.skill_cards.size()
 			column.commander.drawed_cards.append(column.commander.skill_cards[card_index])
 
+func apply_position_turn_start_recovery():
+	for column in all_columns:
+		if !column.routed:
+			column.position.apply_turn_start_recovery(column.army)
+	
 func display():
 	var player_available_column_count = column_width if player_army.columns.size() > column_width else player_army.columns.size()
 	for x in range(0, player_available_column_count):
@@ -56,7 +67,7 @@ func display():
 		player_army.columns[x].column_display = column_display
 		column_display.battle = self
 		column_display.connect("column_selected", self, "_on_column_selected")
-		get_node("SceneBox/BattleField/PlayerBackground/Player").add_child(column_display)
+		get_node("SceneBox/BattleField/PlayerBackground/VBoxContainer/Player").add_child(column_display)
 
 	var enemy_available_column_count = column_width if enemy_army.columns.size() > column_width else enemy_army.columns.size()
 	for x in range(0, enemy_available_column_count):
@@ -65,7 +76,7 @@ func display():
 		enemy_army.columns[x].column_display = column_display
 		column_display.battle = self
 		column_display.connect("column_selected", self, "_on_column_selected")
-		get_node("SceneBox/BattleField/EnemyBackground/Enemy").add_child(column_display)
+		get_node("SceneBox/BattleField/EnemyBackground/VBoxContainer/Enemy").add_child(column_display)
 
 func reset_action():
 	chozen_actions = {}
@@ -73,6 +84,13 @@ func reset_action():
 	for column_index in player_available_column_count:
 		chozen_actions[player_army.columns[column_index].commander] = null
 		player_army.columns[column_index].column_display.get_node("VBoxContainer/PositionLabel/ActionSelectedIndicator").visible = false	
+
+func display_army_info():
+	var info = "troops:" + str(player_army.get_total_troop_count()) + " morale:" + str(player_army.morale) + " organization:" + str(player_army.organization)
+	get_node("SceneBox/BattleField/PlayerBackground/VBoxContainer/InfoContainer/InfoLabel").text = info
+	info = "troops:" + str(enemy_army.get_total_troop_count()) + " morale:" + str(enemy_army.morale) + " organization:" + str(enemy_army.organization)
+	get_node("SceneBox/BattleField/EnemyBackground/VBoxContainer/InfoContainer/InfoLabel").text = info
+
 			
 func display_drawed_cards(commander):
 	clear_card_box()	

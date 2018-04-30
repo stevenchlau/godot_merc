@@ -11,7 +11,7 @@ var organziation_penalty_on_rout
 
 var position_name
 
-func apply_turn_start_bonus(army):
+func apply_turn_start_recovery(army):
 	army.morale += morale_recovery_per_turn
 	army.organization += organization_recovery_per_turn
 	

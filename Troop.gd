@@ -22,9 +22,11 @@ func _craft_summary_string():
 
 func _on_troop_damaged(damaged):
 	if number <= 0:
-		commander.column.routed = true
-		commander.column.column_display.get_node("ColorRect").color = Color(1, 0, 0)
-		commander.column.column_display.get_node("ColorRect").visible = true
-		emit_signal("routed")
-		number = 0	
+		number = 0
+		if !commander.column.routed:
+			commander.column.routed = true
+			commander.column.column_display.get_node("ColorRect").color = Color(1, 0, 0)
+			commander.column.column_display.get_node("ColorRect").visible = true
+			emit_signal("routed")		
+			commander.column.on_routed()
 
