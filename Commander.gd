@@ -1,12 +1,16 @@
 extends "res://Card.gd"
 
+var experience
 var attack = 0
 var defense = 0
 var leadership = 0 # leadership * 100 = max troop
 var command = 4 # how many cards are drawn
-var drawed_cards = []
+
+var ability_cards = []
 var skill_cards = []
 var reserve_troops = []
+
+var drawed_cards = []
 var selected_troop
 var column
 

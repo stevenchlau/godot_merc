@@ -1,7 +1,6 @@
 extends "res://Card.gd"
 
 var troop_type
-var commander
 var number
 
 signal damaged

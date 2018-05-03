@@ -3,7 +3,6 @@ extends "res://Card.gd"
 const TARGET_TYPE = {SELF = "self", ALLY = "ally", ENEMY = "enemy"}
 const TYPE = {ATTACK = "attack", SCOUT = "scout", AMBUSH = "ambush"}
 
-var commander
 var types = []
 # attack, assualt, scout, ambush etc
 var target_type
